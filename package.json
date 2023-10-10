@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "force": "^0.0.3"
+  },
+  "name": "learn-node",
+  "version": "1.0.0",
+  "main": "nodeApp.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
