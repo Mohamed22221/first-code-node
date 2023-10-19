@@ -7,6 +7,7 @@
   "main": "nodeApp.js",
   "devDependencies": {},
   "scripts": {
+    "dev" :"nodemon nodeApp.js" ,
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
