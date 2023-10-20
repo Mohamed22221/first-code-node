@@ -1,13 +1,14 @@
 {
   "dependencies": {
-    "force": "^0.0.3"
+    "express": "^4.18.2",
+    "force": "^0.0.3",
+    "nodemon": "^3.0.1"
   },
   "name": "learn-node",
   "version": "1.0.0",
-  "main": "nodeApp.js",
-  "devDependencies": {},
+  "main": "app.js",
   "scripts": {
-    "dev" :"nodemon nodeApp.js" ,
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
