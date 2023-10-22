@@ -1,16 +1,21 @@
-const express = require("express");
+const path = require('path');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
 const app = express();
-const port = 3000;
 
-app.use("/users", (req, res, next) => {
-  console.log("user middelware");
-  res.send("<h1>Hello from user middelware</h1>");
-  // next()
-});
-app.use("/", (req, res, next) => {
-  res.send("<h1>Hello from all middelware</h1>");
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/admin', adminData.routes);
+app.use(shopRoutes);
+
+app.use((req, res, next) => {
+    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+app.listen(3000);
