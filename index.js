@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const routerCourses = require('./routes/coursesRouter')
 const app = express()
 const port =3000
+const rootFile = require('./util/path')
+console.log(rootFile)
 //data corses
 app.use(bodyParser.json());
 app.use('/api/courses' , routerCourses );
