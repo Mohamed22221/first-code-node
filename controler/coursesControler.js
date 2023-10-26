@@ -1,4 +1,3 @@
-const { courses } = require("../database/courses");
 const { validationResult } = require("express-validator");
 const courseSchema = require("../models/modelCourses");
 const mongoose = require("mongoose");
@@ -35,22 +34,27 @@ const createCourse = async (req, res) => {
   res.status(201).json(newCourse);
 };
 
-const updateCourse = (req, res) => {
-  const id = +req.params.id;
-  let course = courses.find((item) => item.id === id);
-  if (!course) {
+const updateCourse = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const courseUpdated = await courseSchema.updateOne(
+      { _id: id },
+      { ...req.body }
+    );
+    return res.status(200).json(courseUpdated);
+  } catch (err) {
     return res.status(404).json({ msg: "not found course" });
   }
-  course = { ...course, ...req.body };
-
-  res.status(200).json(course);
 };
 
-const deleteCourse = (req, res) => {
-  const id = +req.params.id;
-  let course = courses.filter((item) => item.id !== id);
-
-  res.status(200).json(course);
+const deleteCourse = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const courseDeleted = await courseSchema.deleteOne({ _id: id });
+    return res.status(200).json(courseDeleted);
+  } catch (err) {
+    return res.status(404).json({ msg: "not found course" });
+  }
 };
 
 module.exports = {
