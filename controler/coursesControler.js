@@ -1,28 +1,38 @@
 const { courses } = require("../database/courses");
 const { validationResult } = require("express-validator");
+const courseSchema = require("../models/modelCourses");
+const mongoose = require("mongoose");
 
-const getAllcourses = (req, res) => {
+const getAllcourses = async (req, res) => {
+  const courses = await courseSchema.find();
   res.json(courses);
 };
 
-const getCourse = (req, res) => {
-  const dynamicId = +req.params.id;
-  const course = courses.find((item) => item.id === dynamicId);
-  if (!course) {
-    return res.status(404).json({ msg: "not found course" });
+const getCourse = async (req, res) => {
+  try {
+    const dynamicId = req.params.id;
+    const course = await courseSchema.findById(dynamicId);
+
+    if (!course) {
+      return res.status(404).json({ msg: "not found course" });
+    }
+    res.json(course);
+  } catch (err) {
+    return res.status(404).json({ msg: "invalid object id" });
   }
-  res.json(course);
 };
 
-const createCourse = (req, res) => {
+const createCourse = async (req, res) => {
   const errors = validationResult(req);
-  console.log(errors);
   if (!errors.isEmpty()) {
     return res.status(400).json(errors.array());
   }
-  const newCourse = { id: courses.length + 1, ...req.body };
-  courses.push({ id: courses.length + 1, ...req.body });
-  res.json(newCourse);
+  const newCourse = await courseSchema({
+    _id: new mongoose.Types.ObjectId(),
+    ...req.body,
+  });
+  await newCourse.save();
+  res.status(201).json(newCourse);
 };
 
 const updateCourse = (req, res) => {
