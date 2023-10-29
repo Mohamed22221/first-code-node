@@ -4,7 +4,17 @@ const { validationResult } = require("express-validator");
 const { SUCCESS, FAIL, ERROR } = require("../utils/httpStatus");
 
 const getAllcourses = async (req, res) => {
-  const courses = await courseSchema.find();
+  //handel pagination
+  const query = req.query;
+  const limit = 2;
+  const page = query.page || 1;
+  const skip = (page - 1) * limit;
+  //handel courses and pagination
+  const courses = await courseSchema
+    .find({}, { __v: false })
+    .limit(limit)
+    .skip(skip);
+
   res.json({
     status: SUCCESS,
     data: { courses },
