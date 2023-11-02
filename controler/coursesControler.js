@@ -2,8 +2,10 @@ const mongoose = require("mongoose");
 const courseSchema = require("../models/modelCourses");
 const { validationResult } = require("express-validator");
 const { SUCCESS, FAIL, ERROR } = require("../utils/httpStatus");
+const asyncWrapper = require("../middleware/asyncWrapper");
+const sendError = require("../utils/classError");
 
-const getAllcourses = async (req, res) => {
+const getAllcourses = asyncWrapper( async (req, res) => {
   //handel pagination
   const query = req.query;
   const limit = 2;
@@ -19,39 +21,30 @@ const getAllcourses = async (req, res) => {
     status: SUCCESS,
     data: { courses },
   });
-};
+});
 
-const getCourse = async (req, res) => {
-  try {
-    const dynamicId = req.params.id;
-    const course = await courseSchema.findById(dynamicId);
+const getCourse = asyncWrapper(async (req, res, next) => {
+  // try {
+  const dynamicId = req.params.id;
+  const course = await courseSchema.findById(dynamicId);
 
-    if (!course) {
-      return res.status(404).json({
-        status: FAIL,
-        data: { course: "Not Found Course" },
-      });
-    }
-    res.json({
-      status: SUCCESS,
-      data: { course: course },
-    });
-  } catch (err) {
-    return res.status(404).json({
-      status: ERROR,
-      data: null,
-      message: err.message,
-    });
+  if (!course) {
+    const error = sendError.create(404, FAIL, { course: "Not Found Course" });
+    return next(error);
   }
-};
+  res.json({
+    status: SUCCESS,
+    data: { course: course },
+  });
+});
 
-const createCourse = async (req, res) => {
+const createCourse = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      status: FAIL,
-      data: { course: { errors: errors.array() } },
+    const error = sendError.create(400, FAIL, {
+      course: { errors: errors.array() },
     });
+    return next(error);
   }
   const newCourse = await courseSchema({
     _id: new mongoose.Types.ObjectId(),
@@ -62,44 +55,29 @@ const createCourse = async (req, res) => {
     status: SUCCESS,
     data: newCourse,
   });
-};
+});
 
-const updateCourse = async (req, res) => {
+const updateCourse = asyncWrapper(async (req, res) => {
   const id = req.params.id;
-  try {
-    const courseUpdated = await courseSchema.updateOne(
-      { _id: id },
-      { ...req.body }
-    );
-    return res.status(200).json({
-      status: SUCCESS,
-      data: { course: courseUpdated },
-    });
-  } catch (err) {
-    return res.status(404).json({
-      status: ERROR,
-      data: null,
-      message: err.message,
-    });
-  }
-};
 
-const deleteCourse = async (req, res) => {
+  const courseUpdated = await courseSchema.updateOne(
+    { _id: id },
+    { ...req.body }
+  );
+  return res.status(200).json({
+    status: SUCCESS,
+    data: { course: courseUpdated },
+  });
+});
+
+const deleteCourse = asyncWrapper(async (req, res) => {
   const id = req.params.id;
-  try {
-    const courseDeleted = await courseSchema.deleteOne({ _id: id });
-    return res.status(200).json({
-      status: SUCCESS,
-      data: { course: courseDeleted },
-    });
-  } catch (err) {
-    return res.status(404).json({
-      status: ERROR,
-      data: null,
-      message: err.message,
-    });
-  }
-};
+  const courseDeleted = await courseSchema.deleteOne({ _id: id });
+  return res.status(200).json({
+    status: SUCCESS,
+    data: { course: courseDeleted },
+  });
+}) ;
 
 module.exports = {
   getAllcourses,
