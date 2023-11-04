@@ -2,15 +2,19 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const routerCourses = require("./routes/coursesRouter");
+const routerUsers = require("./routes/usersRouter");
+
 const { ERROR } = require("./utils/httpStatus");
 require("dotenv").config();
 var cors = require("cors");
 const port = process.env.PORT;
 const url = process.env.MONGO_URL;
 app.use(cors());
-//data corses
 app.use(bodyParser.json());
+//routes
 app.use("/api/courses", routerCourses);
+app.use("/api/users", routerUsers);
+
 // global middleware for not found routes
 app.all("*", (req, res) => {
   res.status(404).json({

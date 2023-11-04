@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const courseSchema = require("../models/modelCourses");
-const { validationResult } = require("express-validator");
-const { SUCCESS, FAIL, ERROR } = require("../utils/httpStatus");
+const { SUCCESS, FAIL } = require("../utils/httpStatus");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const sendError = require("../utils/classError");
+const validationFields = require("../utils/validationFields");
 
 const getAllcourses = asyncWrapper( async (req, res) => {
   //handel pagination
@@ -39,13 +39,8 @@ const getCourse = asyncWrapper(async (req, res, next) => {
 });
 
 const createCourse = asyncWrapper(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = sendError.create(400, FAIL, {
-      course: { errors: errors.array() },
-    });
-    return next(error);
-  }
+  //express-validator 
+  validationFields(req , next)
   const newCourse = await courseSchema({
     _id: new mongoose.Types.ObjectId(),
     ...req.body,
