@@ -5,6 +5,7 @@ const { SUCCESS, FAIL , Error } = require("../utils/httpStatus");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const sendError = require("../utils/classError");
 const bcrypt = require("bcrypt");
+const generateJWT = require("../utils/generateJWT");
 
 const getAllusers = asyncWrapper(async (req, res) => {
   //handel pagination
@@ -29,7 +30,7 @@ const regester = asyncWrapper(async (req, res, next) => {
   validationFields(req, next);
 
   const { firstName, lastName, email, password } = req.body;
-  const uniqeUser = await usersSchema.findOne({ email: email });
+  const uniqeUser = await usersSchema.findOne({ email: email } ,  { __v: false });
   if (uniqeUser) {
     const error = sendError.create(400, FAIL, "User Already Exist");
     return next(error);
@@ -42,6 +43,9 @@ const regester = asyncWrapper(async (req, res, next) => {
     email,
     password: hashedPassword,
   });
+  const token = await generateJWT({email : newUser.email ,_id :newUser._id })
+  newUser.token = token
+
   await newUser.save();
   res.status(201).json({
     status: SUCCESS,
@@ -53,7 +57,7 @@ const login = asyncWrapper(async (req, res, next) => {
   const { email, password } = req.body;
   //express-validator
   validationFields(req, next);
-  const user = await usersSchema.findOne({ email });
+  const user = await usersSchema.findOne({ email } ,  { __v: false });
   if (!user) {
     const error = sendError.create(400, FAIL, "User Not Found");
     return next(error);
@@ -61,6 +65,8 @@ const login = asyncWrapper(async (req, res, next) => {
   const matchedPassword = await bcrypt.compare(password, user.password);
 
   if (user && matchedPassword) {
+    // const token = await generateJWT({email : user.email ,_id :user._id })
+    // user.token = token
     return res.status(200).json({
       status: SUCCESS,
       data: user,
