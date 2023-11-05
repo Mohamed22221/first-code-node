@@ -25,7 +25,7 @@ const getAllusers = asyncWrapper(async (req, res) => {
   });
 });
 
-const regester = asyncWrapper(async (req, res, next) => {
+const regester =  (async (req, res, next) => {
   //express-validator
   validationFields(req, next);
 
@@ -65,11 +65,11 @@ const login = asyncWrapper(async (req, res, next) => {
   const matchedPassword = await bcrypt.compare(password, user.password);
 
   if (user && matchedPassword) {
-    // const token = await generateJWT({email : user.email ,_id :user._id })
-    // user.token = token
+    const token = await generateJWT({email : user.email ,_id :user._id })
+  
     return res.status(200).json({
       status: SUCCESS,
-      data: user,
+      data: {token :token },
     });
   } else {
     const error = sendError.create(404, Error, "Password Not Matching");

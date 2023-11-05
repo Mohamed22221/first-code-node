@@ -23,11 +23,11 @@ app.all("*", (req, res) => {
   });
 });
 // global middleware for handel error
-app.use((error , req ,res ,next) =>{
+app.use((error, req, res, next) => {
   res.status(error.statusCode || 500).json({
     status: error.status || ERROR,
     message: error.message,
-    data : null
+    data: null,
   });
 });
 
