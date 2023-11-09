@@ -10,7 +10,8 @@ const verifyToken = async (req, res, next) => {
   }
   const token = auth?.split("  ")[1];
   try {
-    jwt.verify(token, process.env.TOKEN_KEY);
+    const currentRole = jwt.verify(token, process.env.TOKEN_KEY);
+    req.currentRole = currentRole
     next();
   } catch (err) {
     const error = sendError.create(401, ERROR, "Invalid token");

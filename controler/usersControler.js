@@ -29,7 +29,7 @@ const regester =  (async (req, res, next) => {
   //express-validator
   validationFields(req, next);
 
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password , role } = req.body;
   const uniqeUser = await usersSchema.findOne({ email: email } ,  { __v: false });
   if (uniqeUser) {
     const error = sendError.create(400, FAIL, "User Already Exist");
@@ -42,8 +42,9 @@ const regester =  (async (req, res, next) => {
     lastName,
     email,
     password: hashedPassword,
+    role
   });
-  const token = await generateJWT({email : newUser.email ,_id :newUser._id })
+  const token = await generateJWT({email : newUser.email ,_id :newUser._id , role: newUser.role })
   newUser.token = token
 
   await newUser.save();
@@ -65,7 +66,7 @@ const login = asyncWrapper(async (req, res, next) => {
   const matchedPassword = await bcrypt.compare(password, user.password);
 
   if (user && matchedPassword) {
-    const token = await generateJWT({email : user.email ,_id :user._id })
+    const token = await generateJWT({email : user.email ,_id :user._id , role: user.role })
   
     return res.status(200).json({
       status: SUCCESS,
