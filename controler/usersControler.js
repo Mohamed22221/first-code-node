@@ -43,7 +43,7 @@ const regester = asyncWrapper(async (req, res, next) => {
     email,
     password: hashedPassword,
     role,
-    avatar,
+    avatar : req.file.filename,
   });
   const token = await generateJWT({
     email: newUser.email,

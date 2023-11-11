@@ -5,7 +5,7 @@ const asyncWrapper = require("../middleware/asyncWrapper");
 const sendError = require("../utils/classError");
 const validationFields = require("../utils/validationFields");
 
-const getAllcourses = asyncWrapper( async (req, res) => {
+const getAllcourses = asyncWrapper(async (req, res) => {
   //handel pagination
   const query = req.query;
   const limit = 2;
@@ -39,8 +39,8 @@ const getCourse = asyncWrapper(async (req, res, next) => {
 });
 
 const createCourse = asyncWrapper(async (req, res, next) => {
-  //express-validator 
-  validationFields(req , next)
+  //express-validator
+  validationFields(req, next);
   const newCourse = await courseSchema({
     _id: new mongoose.Types.ObjectId(),
     ...req.body,
@@ -72,7 +72,7 @@ const deleteCourse = asyncWrapper(async (req, res) => {
     status: SUCCESS,
     data: { course: courseDeleted },
   });
-}) ;
+});
 
 module.exports = {
   getAllcourses,
