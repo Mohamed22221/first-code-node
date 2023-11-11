@@ -1,19 +1,28 @@
 const express = require("express");
 const app = express();
+const path = require('path')
 const bodyParser = require("body-parser");
+var multer = require('multer');
 const routerCourses = require("./routes/coursesRouter");
 const routerUsers = require("./routes/usersRouter");
-
 const { ERROR } = require("./utils/httpStatus");
+
 require("dotenv").config();
 var cors = require("cors");
 const port = process.env.PORT;
 const url = process.env.MONGO_URL;
 app.use(cors());
-app.use(bodyParser.json());
+// for parsing application/json
+app.use(bodyParser.json()); 
+
+//form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false })); 
+
 //routes
 app.use("/api/courses", routerCourses);
 app.use("/api/users", routerUsers);
+app.use("/uploads", express.static(path.join(__dirname , 'uploads')));
+
 
 // global middleware for not found routes
 app.all("*", (req, res) => {
